@@ -9,7 +9,7 @@ improcess:
   mode: find-all
   running: False
   fps: None
-  pixel_size: 8.6 # microns
+  pixel_size: 8.30 # 4.8 * 0.578 microns per pixel
   size: None   # dimensions of image. [height, width, length]
   max_track_len: 40
   min_track_len: 3
