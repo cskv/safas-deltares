@@ -26,7 +26,7 @@ class ParamsDialog(QMainWindow):
 
     def __init__(self, parent=None, params=None, imfilter=None):
 
-        super(ParamsDialog, self).__init__(parent)
+        super().__init__(parent)
 
         self.parent = parent
         self.imfilter = imfilter
@@ -193,7 +193,7 @@ class ParamsDialog(QMainWindow):
 def main(params=None, imfilter=None):
    """ run stand-alone for testing """
    app = QApplication([])
-   w = CtrlParams(parent=None, params=params, imfilter=imfilter)
+   w = ParamsDialog(parent=None, params=params, imfilter=imfilter)
    w.show()
    sys.exit(app.exec_())
 

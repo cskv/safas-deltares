@@ -11,6 +11,8 @@ from skimage.measure import regionprops
 import numpy as np
 from safas import data
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("Qt5Agg")
 
 def focus_filter(labels, img, edge_thresh=30, edge_dist=2, **kwargs):
     """ remove out of focus flocs by combining labels and gradient images """
@@ -141,16 +143,21 @@ def add_contours(img, labels, contour_color, contour_thickness=1, **kwargs):
 
     return contourimg
 
+
 if __name__ =='__main__':
     print('test the focus_filter')
 
-    img = data.mudflocs()
+    # img = data.mudflocs()
+    img = data.brightmudflocs()
     thresh, img = prethresh_filter(img, img_thresh=80)
     labels = marker_based_watershed(img, thresh)
     grad = cal_grad_img(img, edge_thresh=100)
-    out = nn_perim_filter(labels, grad, edge_dist=2)
+    out = perim_filter(labels, grad, edge_dist=2)
     out2 = focus_filter(labels=labels, img=img, edge_thresh=100, edge_dist=2)
-    f, ax = plt.subplots(1,3, dpi=250)
+
+    f, ax = plt.subplots(1, 3)
     ax[0].imshow(img)
     ax[1].imshow(out)
     ax[2].imshow(out2)
+    plt.tight_layout()
+    plt.show()

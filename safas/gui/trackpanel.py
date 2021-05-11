@@ -27,7 +27,7 @@ class TrackPanel(QMainWindow):
     status_update_signal = pyqtSignal(str, name="status_update_signal")
 
     def __init__(self, parent=None, params=None, params_file=None, *args, **kwargs):
-        super(TrackPanel, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # parent is the Stream object
         self.parent = parent

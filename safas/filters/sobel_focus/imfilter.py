@@ -48,7 +48,7 @@ def imfilter(src,
     ret, labels = cv2.connectedComponents(thresh)
 
     if apply_focus_filter:
-       labels = focus_filter(labels, gray, edge_thresh)
+        labels = focus_filter(labels, gray, edge_thresh)
 
     if apply_clearedge_filter:
         labels = clearedge_filter(labels)
@@ -56,8 +56,7 @@ def imfilter(src,
     contour_img = add_contours(src.copy(), labels,
                               contour_color=contour_color,
                               contour_thickness=contour_thickness)
-
-    return (labels, contour_img)
+    return labels, contour_img
 
 if __name__ == '__main__':
     import sys
@@ -79,5 +78,6 @@ if __name__ == '__main__':
 
     ax[0].imshow(labels)
     ax[1].imshow(contour_img)
+    plt.show()
 
 

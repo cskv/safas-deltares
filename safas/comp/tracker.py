@@ -60,7 +60,6 @@ KEYS = ['area',
         'extent',]
 
 
-
 class Tracker(QObject):
     display_frame_signal = pyqtSignal(object, int, name="display_frame_signal")
 
@@ -437,7 +436,7 @@ class Tracker(QObject):
             track = self.tracks['id'][i]
             cents = np.array([t['prop'].centroid for t in track])
             # mask cents on -99999
-            mask = cents[:,0] != -99999
+            mask = cents[:, 0] != -99999
             cents = cents[mask]
 
             if len(cents) >= N:
@@ -445,15 +444,15 @@ class Tracker(QObject):
 
                 # calculate angle of each track wrt [1,0]
                 vect = cents[1:] - cents[:-1]
-                angles = [angle_between(np.array([1,0]), vt) for vt in vect]
+                angles = [angle_between(np.array([1, 0]), vt) for vt in vect]
                 disp_metric = np.array(dist)*self.params['improcess']['pixel_size']/10**3 # in mm
                 v = disp_metric/dt
                 match_errors = np.array([t['match_error'] for t in track])
                 match_errors = match_errors[mask]
 
                 # dataframe for track stats
-                track_stats = {'cents_x': cents[:,1],
-                               'cents_y': cents[:,0],
+                track_stats = {'cents_x': cents[:, 1],
+                               'cents_y': cents[:, 0],
                                 'dist': np.append(0, dist),
                                 'angles': np.append(0, angles),
                                 'velocity': np.append(0, v),
@@ -462,7 +461,7 @@ class Tracker(QObject):
                 self.track_stats[i] = pd.DataFrame(track_stats)
 
                 # track excluded if angle is too large
-                if np.abs(np.nanmean(angles))< theta_max:
+                if np.abs(np.nanmean(angles)) < theta_max:
                     vmean= np.mean(v)
                     vstd = np.std(v)
                     vN = len(v)
