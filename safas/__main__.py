@@ -5,13 +5,14 @@ entry point to the safas gui
 
 """
 
-import sys
 import os
-from glob import glob
+import sys
+
 from PyQt5.QtWidgets import QApplication
 
 import safas
 from safas.gui.mainpanel import MainPanel
+
 
 def main(config_file=None):
     """ parse args """
@@ -30,13 +31,14 @@ def main(config_file=None):
         config_file = os.path.join(safas.__path__[0], 'config.yml')
 
     app = QApplication([])
-    f = app.font();
-    f.setFamily("Monaco");
-    f.setPointSize(9);
+    f = app.font()
+    f.setFamily("Monaco")
+    f.setPointSize(9)
     app.setFont(f)
 
     window = MainPanel(config_file)
     app.exec_()
+
 
 if __name__ == "__main__":
     main()
