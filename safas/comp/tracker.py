@@ -445,6 +445,12 @@ class Tracker(QObject):
             cents = cents[mask]
 
             if len(cents) >= N:
+                # subtract the cents array minus the last element
+                # from the cents array minus the first element:
+                # this yields a array of tuples
+                # that contains the differences of each element of cents
+                # with its predecessor in time
+                # from each tuple the 2-norm is calculated
                 dist = np.linalg.norm((cents[1:] - cents[:-1]), axis=1)
 
                 # calculate angle of each track wrt [1,0]
