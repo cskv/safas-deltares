@@ -455,6 +455,8 @@ class Tracker(QObject):
 
                 # calculate angle of each track wrt [1,0]
                 vect = cents[1:] - cents[:-1]
+                vect2 = np.diff(cents, axis=0)
+
                 angles = [angle_between(np.array([1, 0]), vt) for vt in vect]
                 disp_metric = np.array(dist) * self.params['improcess']['pixel_size'] / 10 ** 3  # in mm
                 v = disp_metric / dt
