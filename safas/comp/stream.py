@@ -15,24 +15,25 @@ notes:
     module is used with an explicit slot or additional keyword arguments
 
 """
-import os
-import sys
-from glob import glob
-import importlib
-import time
+# import os
+# import sys
+# from glob import glob
+# import importlib
+# import time
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+# from PyQt5.QtGui import *
+# from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from pathlib import Path
+# from pathlib import Path
 
 from safas.gui.viewer import TrackbarViewer
 from safas.gui.trackpanel import TrackPanel
 from safas.comp.handler import Handler
 from safas.comp.qt_threads import QueueThreads
-from safas.comp.setconfig import config_params, read_params, set_dirout
+from safas.comp.setconfig import config_params, set_dirout  # , read_params
 from safas import filters
+
 
 class Stream(QObject):
     """
@@ -111,7 +112,7 @@ class Stream(QObject):
 
         self.track_panel = TrackPanel(parent=self)
 
-        self.track_panel.setup() # add the TrackLists in this step to access Stream
+        self.track_panel.setup()  # add the TrackLists in this step to access Stream
 
         # connect TrackPanel and Tracks objects to status box in main gui
         self.track_panel.status_update_signal.connect(self.parent.update_status)

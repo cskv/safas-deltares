@@ -7,6 +7,7 @@ entry point to the safas gui
 
 import os
 import sys
+import logging
 
 from PyQt5.QtWidgets import QApplication
 
@@ -37,6 +38,7 @@ def main(config_file=None):
     app.setFont(f)
 
     window = MainPanel(config_file)
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)  # global, once for the app
     app.exec_()
 
 

@@ -9,16 +9,21 @@ classes to control movement of images in the module
 * emit frames to Tracker
 """
 import os
-import importlib
+# import importlib
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+# from PyQt5.QtGui import *
+# from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import cv2
 
-from safas.comp.qt_threads import QueueThreads
+# from safas.comp.qt_threads import QueueThreads
 from safas.comp.tracker import Tracker
 from safas import filters
+
+import logging
+
+LOG = logging.getLogger('Handler')  # fixed name to enable descendant logging objects...
+LOG.setLevel(logging.INFO)
 
 __author__ = 'Ryan MacIver'
 __copyright__ = 'Copyright 2019'
@@ -29,8 +34,8 @@ __maintainer__ = 'Ryan MacIver'
 __email__ = 'rmcmaciver@hotmail.com'
 __status__ = 'Dev'
 
-class Handler(QObject):
 
+class Handler(QObject):
     frame_signal = pyqtSignal(object, int, name="frame_signal")
     process_finished_signal = pyqtSignal(int, name='process_finished_signal')
     frame_finished_signal = pyqtSignal(object, int, name='frame_finished_signal')
@@ -38,7 +43,7 @@ class Handler(QObject):
 
     def __init__(self, parent=None, params=None):
         super(self.__class__, self).__init__(parent)
-
+        LOG.info(f"Create Handler object")
         # params must be in one or the others
         if parent is not None:
             self.parent = parent
@@ -73,8 +78,8 @@ class Handler(QObject):
             line = 'video started: %s' % self.cap.isOpened()
             self.status_update_signal.emit(line)
 
-            width  = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # float
-            height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) # float
+            width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # float
+            height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # float
             length = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
             # may want to allow user to override fps if not correct in video header
@@ -109,7 +114,7 @@ class Handler(QObject):
         else:
             if self.params['improcess']['running']:
                 label_frame, contour_frame = self.imfilter(src=frame,
-                                                 **self.params['improcess']['kwargs'])
+                                                           **self.params['improcess']['kwargs'])
                 self.frame_count += 1
                 self.label_img = label_frame
                 self.contour_img = contour_frame
@@ -126,14 +131,14 @@ class Handler(QObject):
         while index < indexf:
             err, frame = self.cap.read()
             self.threadpool.add_to_queue(function=self.process_frames,
-                                             index=index,
-                                             frame=frame)
+                                         index=index,
+                                         frame=frame)
             index += 1
 
     def process_frames(self, index, frame, **kwargs):
 
         label_frame, contour_frame = self.imfilter(src=frame,
-                                                 **self.params['improcess']['kwargs'])
+                                                   **self.params['improcess']['kwargs'])
         self.tracker.add_frame(label_frame, contour_frame, frame, index)
         self.frame_finished_signal.emit(contour_frame, index)
 

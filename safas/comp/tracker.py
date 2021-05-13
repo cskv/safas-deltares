@@ -24,24 +24,24 @@ Tracker class for correlating objects in time series of frames
     2 true divide error observed a couple of times in 'angle_between'
 """
 import os
-from glob import glob
-from itertools import cycle
+# from glob import glob
+# from itertools import cycle
 import collections
-import importlib
-import yaml
+# import importlib
+# import yaml
 
 import numpy as np
-from scipy.spatial import distance
+# from scipy.spatial import distance
 import pandas as pd
 
-import skimage
+# import skimage
 import skimage.io as sio
 from skimage.measure import label, regionprops, find_contours
-from skimage.color import rgb2gray
+# from skimage.color import rgb2gray
 from skimage.util import pad
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+# from PyQt5.QtGui import *
+# from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import cv2
@@ -49,7 +49,12 @@ import cv2
 from safas.comp.matcher import matcher
 from safas.comp.setconfig import write_params, set_dirout
 
-# these properties from skimage.measure.regioprops are added to the object
+import logging
+
+LOG = logging.getLogger('Tracker')  # fixed name to enable descendant logging objects...
+LOG.setLevel(logging.INFO)
+
+# these properties from skimage.measure.regionprops are added to the object
 #   analysis. other keys may be added.
 KEYS = ['area',
         'equivalent_diameter',
@@ -57,7 +62,7 @@ KEYS = ['area',
         'euler_number',
         'minor_axis_length',
         'major_axis_length',
-        'extent',]
+        'extent', ]
 
 
 class Tracker(QObject):
@@ -65,7 +70,7 @@ class Tracker(QObject):
 
     def __init__(self, parent=None, params=None, *args, **kwargs):
         super(Tracker, self).__init__(*args, **kwargs)
-
+        LOG.info(f"Create Tracker object")
         if parent is None:
             self.params = params
             self.parent = parent
@@ -106,7 +111,7 @@ class Tracker(QObject):
 
             if L is not None:
                 P = regionprops(label_image=L)
-                T= len(P) # do not include the background
+                T = len(P)  # do not include the background
                 C = find_contours(label_frame, 100)
 
                 self.frames[frame_index] = {'frame': label_frame,
@@ -193,7 +198,7 @@ class Tracker(QObject):
         # a method to overwrite 'lost' tracks with -99999
         track = self.tracks['id'][id_obj]
         if (len(track) > 1) & (track[-1]['id_curr'] == -99999):
-            id_curr == -99999
+            id_curr = -99999
 
         if id_curr == -99999:
             # match_error > threshold, invalid match, filled with -99999
@@ -260,8 +265,8 @@ class Tracker(QObject):
     def outline_single_new(self, frame, index, val, **kwargs):
         """ make image to be displayed in window for user interaction"""
         coords = self.frames[index]['props'][val].coords
-        frame[coords[:,0], coords[:,1]] = [0, 0, 255] # red
-        return (frame, index)
+        frame[coords[:, 0], coords[:, 1]] = [0, 0, 255]  # red
+        return frame, index
 
     def outline_single_open(self, frame, index, val, **kwargs):
         """ make image to be displayed in window for user interaction"""
@@ -269,8 +274,8 @@ class Tracker(QObject):
 
         if index in self.frames:
             coords = self.frames[index]['props'][val].coords
-            frame[coords[:,0], coords[:,1]] = [255, 0, 0] # blue
-            return (frame, index)
+            frame[coords[:, 0], coords[:, 1]] = [255, 0, 0]  # blue
+            return frame, index
         else:
             return None
 
@@ -287,7 +292,7 @@ class Tracker(QObject):
                 if xy[0][0] == -99999:
                     # this is a FakeProp i.e. a terminated object track
                     continue
-                overlay_t[xy[:,0], xy[:,1]] = [225, 255, 50]
+                overlay_t[xy[:, 0], xy[:, 1]] = [225, 255, 50]
 
         frame = cv2.addWeighted(frame, 1, overlay_t, alpha, 0)
         self.display_frame_signal.emit(frame, index)
@@ -300,10 +305,10 @@ class Tracker(QObject):
             if self.parent is None:
                 self.params = set_dirout(params=self.params)
             else:
-                self.parent.parent.set_output(folders=['imgs','params','data'])
+                self.parent.parent.set_output(folders=['imgs', 'params', 'data'])
 
         dirout = self.params['output']
-        N = len(os.listdir(os.path.join(dirout,'data')))
+        N = len(os.listdir(os.path.join(dirout, 'data')))
 
         name = '%02d_' % (N + 1) + 'frame_index_%d' % self.frame_index
         dirout_data = os.path.join(dirout, 'data', name)
@@ -360,20 +365,20 @@ class Tracker(QObject):
             # the first item
             tk = tracks[t][0]
 
-            #if tracks[t][-1] is not None:
-                # do not calculate for 'lost' objects
+            # if tracks[t][-1] is not None:
+            # do not calculate for 'lost' objects
             pk = {}
             for ky in KEYS:
                 # calculate metric vals with pxcal
                 if ky == 'area':
-                    pk[ky] = tk['prop'][ky]*pxcal**2
+                    pk[ky] = tk['prop'][ky] * pxcal ** 2
 
                 elif ky in ['equivalent_diameter',
-                          'perimeter',
-                          'minor_axis_length',
-                          'major_axis_length']:
+                            'perimeter',
+                            'minor_axis_length',
+                            'major_axis_length']:
 
-                    pk[ky] = tk['prop'][ky]*pxcal
+                    pk[ky] = tk['prop'][ky] * pxcal
                 else:
                     pk[ky] = tk['prop'][ky]
 
@@ -391,18 +396,18 @@ class Tracker(QObject):
             track = self.tracks['id'][i][0]
             binary = track['image']['binary']
             gs = track['image']['intensity']
-            for img, name in zip([binary, gs], ['binary','intensity']):
+            for img, name in zip([binary, gs], ['binary', 'intensity']):
                 fname = '%04d_' % i + '%s.png' % name
                 fname = os.path.join(dirout, fname)
                 if name == 'binary':
-                    img = (img*255).astype(np.uint8)
+                    img = (img * 255).astype(np.uint8)
                 print('image save:', img.shape, 'object:', i)
                 sio.imsave(arr=img, fname=fname)
 
-    def cal_fractal_dimension(self,):
+    def cal_fractal_dimension(self, ):
         """ calculate box counting fractal dimension of the flocs"""
         T = {}
-        #next:  parallelize to speed up
+        # next:  parallelize to speed up
         for i in self.tracks['id']:
             track = self.tracks['id'][i][0]
             img = track['image']['binary']
@@ -428,7 +433,7 @@ class Tracker(QObject):
         if 'min_track_len' in self.params['improcess']:
             N = self.params['improcess']['min_track_len']
 
-        dt = 1/self.params['improcess']['fps']
+        dt = 1 / self.params['improcess']['fps']
         # dictionary to hold the
         T = {}
 
@@ -440,29 +445,29 @@ class Tracker(QObject):
             cents = cents[mask]
 
             if len(cents) >= N:
-                dist = np.linalg.norm((cents[1:]-cents[:-1]), axis=1)
+                dist = np.linalg.norm((cents[1:] - cents[:-1]), axis=1)
 
                 # calculate angle of each track wrt [1,0]
                 vect = cents[1:] - cents[:-1]
                 angles = [angle_between(np.array([1, 0]), vt) for vt in vect]
-                disp_metric = np.array(dist)*self.params['improcess']['pixel_size']/10**3 # in mm
-                v = disp_metric/dt
+                disp_metric = np.array(dist) * self.params['improcess']['pixel_size'] / 10 ** 3  # in mm
+                v = disp_metric / dt
                 match_errors = np.array([t['match_error'] for t in track])
                 match_errors = match_errors[mask]
 
                 # dataframe for track stats
                 track_stats = {'cents_x': cents[:, 1],
                                'cents_y': cents[:, 0],
-                                'dist': np.append(0, dist),
-                                'angles': np.append(0, angles),
-                                'velocity': np.append(0, v),
-                                'match_error': match_errors,
-                                 }
+                               'dist': np.append(0, dist),
+                               'angles': np.append(0, angles),
+                               'velocity': np.append(0, v),
+                               'match_error': match_errors,
+                               }
                 self.track_stats[i] = pd.DataFrame(track_stats)
 
                 # track excluded if angle is too large
                 if np.abs(np.nanmean(angles)) < theta_max:
-                    vmean= np.mean(v)
+                    vmean = np.mean(v)
                     vstd = np.std(v)
                     vN = len(v)
                     track[0]['vel_mean'] = vmean
@@ -473,21 +478,23 @@ class Tracker(QObject):
         # filtered tracks with velocity added are put back in the tracks dict
         self.tracks['id'] = T
 
+
 def pad_images(prop, raw_frame, pad_val=10):
     """ pad the binary image and extract the intensity image"""
 
     # crop out the raw intensity image area
     pb = prop.bbox
-    ps = np.array([(pb[0]-pad_val),(pb[1]-pad_val),
-                   (pb[2]+pad_val),(pb[3]+pad_val)])
+    ps = np.array([(pb[0] - pad_val), (pb[1] - pad_val),
+                   (pb[2] + pad_val), (pb[3] + pad_val)])
     print('prop box:', pb, 'gs box:', ps)
     gs_pad = raw_frame[ps[0]:ps[2], ps[1]:ps[3]]
 
     # pad the binary image
-    binary_pad = pad(prop.image, pad_width=((pad_val,pad_val),
-                                            (pad_val,pad_val)))
+    binary_pad = pad(prop.image, pad_width=((pad_val, pad_val),
+                                            (pad_val, pad_val)))
 
-    return (binary_pad, gs_pad)
+    return binary_pad, gs_pad
+
 
 def angle_between(v1, v2):
     """ angle between vectors v1 and v2 """
@@ -495,27 +502,29 @@ def angle_between(v1, v2):
     v2_u = unit_vector(v2)
     return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
 
+
 def unit_vector(vector):
     """  unit vector of the vector """
     # true divide error not solved in some cases
     return vector / np.linalg.norm(vector)
 
+
 def test_img():
-    img = np.zeros((1000,1000))
+    img = np.zeros((1000, 1000))
     img[100:200, 100:200] = 255
-    img[300:400,300:400] = 255
-    img[500:600,500:600] = 255
+    img[300:400, 300:400] = 255
+    img[500:600, 500:600] = 255
     return img
 
 
-class FakeProp():
+class FakeProp:
     # replace None with a FakeProp filled with -99999
-    centroid = (-99999,-99999)
+    centroid = (-99999, -99999)
     area = -99999
     coords = [(-99999, -99999)]
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     F = FakeProp()
     # t = test_img()
 
