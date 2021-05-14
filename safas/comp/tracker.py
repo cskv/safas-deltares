@@ -69,6 +69,14 @@ class Tracker(QObject):
     display_frame_signal = pyqtSignal(object, int, name="display_frame_signal")
 
     def __init__(self, parent=None, params=None, *args, **kwargs):
+        """
+
+        Args:
+            parent:
+            params:
+            *args:
+            **kwargs:
+        """
         super(Tracker, self).__init__(*args, **kwargs)
         LOG.info(f"Create Tracker object")
         if parent is None:
@@ -93,9 +101,20 @@ class Tracker(QObject):
         self.overlay = None
 
     def add_frame(self, label_frame, contour_frame, raw_frame, frame_index, **kwargs):
-        """ filtered binary frames are labelled then added
+        """filtered binary frames are labelled then added.
+
             frame: <uint8 array>
             frame_index: <int32>
+
+        Args:
+            label_frame:
+            contour_frame:
+            raw_frame:
+            frame_index:
+            **kwargs:
+
+        Returns:
+
         """
         # simple check in case viewer was scrolled back
         if frame_index not in self.frames:
@@ -125,7 +144,11 @@ class Tracker(QObject):
                 self.frame_count += 1
 
     def list_new(self):
-        """ for external connections."""
+        """for external connections.
+
+        Returns:
+
+        """
         if self.frame_index is not None:
             return self.frames[self.frame_index]['total']
 
@@ -133,7 +156,14 @@ class Tracker(QObject):
             return None
 
     def list_open(self, **kwargs):
-        """ return a list of object numbers in previous frame on the track """
+        """return a list of object numbers in previous frame on the track.
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         if len(self.tracks['id']) > 0:
             vals = []
             for id_obj in self.tracks['id']:
@@ -144,7 +174,17 @@ class Tracker(QObject):
             return None
 
     def add_object(self, frame_index, id_curr, add_image=True, **kwargs):
-        """ add a new object to track """
+        """add a new object to track.
+
+        Args:
+            frame_index:
+            id_curr:
+            add_image:
+            **kwargs:
+
+        Returns:
+
+        """
         prop = self.frames[self.frame_index]['props'][id_curr]
         raw_frame = self.frames[self.frame_index]['rframe']
 
@@ -176,11 +216,23 @@ class Tracker(QObject):
         self.object_counter += 1
 
     def remove_object(self, id_obj, **kwargs):
-        """ remove the track from the list """
+        """remove the track from the list.
+
+        Args:
+            id_obj:
+            **kwargs:
+
+        Returns:
+
+        """
         self.tracks['id'].pop(id_obj)
 
     def n_tracks(self):
-        """ calculate number of objects being tracked """
+        """calculate number of objects being tracked.
+
+        Returns:
+
+        """
         val = len(list(self.tracks['id'].keys()))
         return val
 
@@ -191,7 +243,18 @@ class Tracker(QObject):
                             match_error=None,
                             **kwargs
                             ):
-        """ Add a new object to an existing track"""
+        """Add a new object to an existing track.
+
+        Args:
+            frame_index:
+            id_obj:
+            id_curr:
+            match_error:
+            **kwargs:
+
+        Returns:
+
+        """
         print('data:', frame_index, id_obj, id_curr, match_error)
 
         # test if not the first object and if last obj added was -99999
@@ -227,8 +290,16 @@ class Tracker(QObject):
         self.tracks['id'][id_obj].append(vals)
 
     def predict_next_all(self, index, **kwargs):
-        """ correlate each selected object in frame N-1 with an object in the
-                current frame """
+        """correlate each selected object in frame N-1 with an object in the
+                current frame.
+
+        Args:
+            index:
+            **kwargs:
+
+        Returns:
+
+        """
         criteria = self.params['matcher']
         A_props = []
         A_ids = []
@@ -254,7 +325,18 @@ class Tracker(QObject):
                                      match_error=match_error)
 
     def outline_pair(self, frame, index, val_open=None, val_new=None, **kwargs):
-        """ outline the selected new and open objects """
+        """outline the selected new and open objects.
+
+        Args:
+            frame:
+            index:
+            val_open:
+            val_new:
+            **kwargs:
+
+        Returns:
+
+        """
         if val_new is not None:
             frame, index = self.outline_single_new(frame, index, val_new)
         if val_open is not None:
@@ -263,13 +345,33 @@ class Tracker(QObject):
         self.display_frame_signal.emit(frame, index)
 
     def outline_single_new(self, frame, index, val, **kwargs):
-        """ make image to be displayed in window for user interaction"""
+        """make image to be displayed in window for user interaction.
+
+        Args:
+            frame:
+            index:
+            val:
+            **kwargs:
+
+        Returns:
+
+        """
         coords = self.frames[index]['props'][val].coords
         frame[coords[:, 0], coords[:, 1]] = [0, 0, 255]  # red
         return frame, index
 
     def outline_single_open(self, frame, index, val, **kwargs):
-        """ make image to be displayed in window for user interaction"""
+        """make image to be displayed in window for user interaction.
+
+        Args:
+            frame:
+            index:
+            val:
+            **kwargs:
+
+        Returns:
+
+        """
         index -= 1
 
         if index in self.frames:
@@ -280,7 +382,17 @@ class Tracker(QObject):
             return None
 
     def outline_track(self, frame, index, id_obj, **kwargs):
-        """ overlay a single track when selected """
+        """overlay a single track when selected.
+
+        Args:
+            frame:
+            index:
+            id_obj:
+            **kwargs:
+
+        Returns:
+
+        """
         overlay_t = np.zeros_like(frame, dtype=np.uint8)
         alpha = 0.9
         if type(id_obj) == int:
@@ -298,8 +410,14 @@ class Tracker(QObject):
         self.display_frame_signal.emit(frame, index)
 
     def save(self, filename=None):
-        """ calculate velocity and convert tracks to dataframe format"""
+        """calculate velocity and convert tracks to dataframe format.
 
+        Args:
+            filename:
+
+        Returns:
+
+        """
         # make an output
         if self.params['output'] == 0:
             if self.parent is None:
@@ -317,9 +435,9 @@ class Tracker(QObject):
             os.mkdir(dirout_data)
             os.mkdir(os.path.join(dirout_data, 'track_stats'))
 
-        # calculate velocity, metric props
-        self.cal_vel()
-        self.cal_props()
+        # calculate velocity, metric props (conversion from pixels to mm)
+        self.calculate_velocities()
+        self.calculate_properties()
 
         # write frames if available
         if self.props_frame is not None:
@@ -355,43 +473,59 @@ class Tracker(QObject):
 
             self.save_obj_images(dirout=dirout)
 
-    def cal_props(self):
-        """ convert props from tracks to metric"""
+    def calculate_properties(self):
+        """convert props from tracks to metric.
+
+        Returns:
+
+        """
         tracks = self.tracks['id']
-        pxcal = self.params['improcess']['pixel_size']
+        pxcal = self.params['improcess']['pixel_size']  # micron per pixel
         # list of processed tracks
         T = []
         for t in tracks:
             # the first item
             tk = tracks[t][0]
 
-            # if tracks[t][-1] is not None:
+            # if tracks[t][-1] is not None:  # if the last point of the track is not None ????
             # do not calculate for 'lost' objects
             pk = {}
             for ky in KEYS:
                 # calculate metric vals with pxcal
                 if ky == 'area':
-                    pk[ky] = tk['prop'][ky] * pxcal ** 2
+                    pk[ky] = tk['prop'][ky] * pxcal ** 2  # convert area from pixel^2 to micron^2
 
                 elif ky in ['equivalent_diameter',
                             'perimeter',
                             'minor_axis_length',
                             'major_axis_length']:
 
-                    pk[ky] = tk['prop'][ky] * pxcal
+                    pk[ky] = tk['prop'][ky] * pxcal  # convert length properties to micron
                 else:
-                    pk[ky] = tk['prop'][ky]
+                    pk[ky] = tk['prop'][ky]          # other properties are not converted
 
             if 'vel_mean' in tk:
                 pk['vel_mean'] = tk['vel_mean']
                 pk['vel_N'] = tk['vel_N']
                 pk['vel_std'] = tk['vel_std']
+                pk['vel_vert_mean'] = tk['vel_vert_mean']  # added hor and vert velocity
+                pk['vel_vert_std'] = tk['vel_vert_std']
+                pk['vel_hor_mean'] = tk['vel_hor_mean']
+                pk['vel_hor_std'] = tk['vel_hor_std']
+
             T.append(pk)
 
         self.props_frame = pd.DataFrame(T)
 
     def save_obj_images(self, dirout=None):
-        """ save the images """
+        """save the images.
+
+        Args:
+            dirout:
+
+        Returns:
+
+        """
         for i in self.tracks['id']:
             track = self.tracks['id'][i][0]
             binary = track['image']['binary']
@@ -405,7 +539,10 @@ class Tracker(QObject):
                 sio.imsave(arr=img, fname=fname)
 
     def cal_fractal_dimension(self, ):
-        """ calculate box counting fractal dimension of the flocs"""
+        """calculate box counting fractal dimension of the flocs.
+
+        Not implemented yet
+        """
         T = {}
         # next:  parallelize to speed up
         for i in self.tracks['id']:
@@ -418,14 +555,23 @@ class Tracker(QObject):
         # add tracks with fd back in dict
         self.tracks['id'] = T
 
-    def cal_vel(self, theta_max=45, N=2):
-        """ cal velocity from a series of centroids
+    def calculate_velocities(self, theta_max=45, N=2):
+        """calculate velocities from a series of centroids.
+
             * filter flocs not moving generally downward
-            * pixel size calibration in um.
+            * pixel size calibration in mm.
             * dt is time in seconds
             * velocity in mm/s
             * assumption is that centroids occur in sequential frame; forced
                 because when no match is found and -99999 is added
+
+        Args:
+            theta_max (float): maximum allowed angle of track with vertical
+            N: (int):          minimum number of frames covered by a track
+
+        Returns:
+            None: updates a number of class attributes needed for saving to Excel
+
         """
         if 'max_object_angle' in self.params['improcess']:
             theta_max = self.params['improcess']['max_object_angle']
@@ -455,7 +601,6 @@ class Tracker(QObject):
 
                 # calculate angle of each track wrt [1,0]
                 vect = cents[1:] - cents[:-1]
-                vect2 = np.diff(cents, axis=0)
 
                 angles = [angle_between(np.array([1, 0]), vt) for vt in vect]
                 disp_metric = np.array(dist) * self.params['improcess']['pixel_size'] / 10 ** 3  # in mm
@@ -463,13 +608,22 @@ class Tracker(QObject):
                 match_errors = np.array([t['match_error'] for t in track])
                 match_errors = match_errors[mask]
 
+                # calculation of horizontal(x) and vertical(y) velocities
+                # numpy.diff does the job, provided you subtract row n-1 from row n (axis=0)
+                vect2 = np.diff(cents, axis=0)                             # use numpy.diff
+                vect2 *= self.params['improcess']['pixel_size'] / 10 ** 3  # in mm
+                vect2 /= dt                                                # in mm/s
+
                 # dataframe for track stats
+                # added vertical and horizontal velocities to prevent ambiguity with x and y
                 track_stats = {'cents_x': cents[:, 1],
                                'cents_y': cents[:, 0],
                                'dist': np.append(0, dist),
                                'angles': np.append(0, angles),
                                'velocity': np.append(0, v),
                                'match_error': match_errors,
+                               'vel_vert': np.append(0, vect2[:, 0]),
+                               'vel_hor': np.append(0, vect2[:, 1])
                                }
                 self.track_stats[i] = pd.DataFrame(track_stats)
 
@@ -478,9 +632,17 @@ class Tracker(QObject):
                     vmean = np.mean(v)
                     vstd = np.std(v)
                     vN = len(v)
+                    v_vert_mean = np.mean(vect2[:, 0])  # added hor and vert velocity
+                    v_vert_std = np.std(vect2[:, 0])
+                    v_hor_mean = np.mean(vect2[:, 1])
+                    v_hor_std = np.std(vect2[:, 1])
                     track[0]['vel_mean'] = vmean
                     track[0]['vel_std'] = vstd
                     track[0]['vel_N'] = vN
+                    track[0]['vel_vert_mean'] = v_vert_mean  # added hor and vert velocity
+                    track[0]['vel_vert_std'] = v_vert_std
+                    track[0]['vel_hor_mean'] = v_hor_mean
+                    track[0]['vel_hor_std'] = v_hor_std
                     T[i] = track
 
         # filtered tracks with velocity added are put back in the tracks dict
@@ -488,8 +650,16 @@ class Tracker(QObject):
 
 
 def pad_images(prop, raw_frame, pad_val=10):
-    """ pad the binary image and extract the intensity image"""
+    """pad the binary image and extract the intensity image.
 
+    Args:
+        prop:
+        raw_frame:
+        pad_val:
+
+    Returns:
+
+    """
     # crop out the raw intensity image area
     pb = prop.bbox
     ps = np.array([(pb[0] - pad_val), (pb[1] - pad_val),
@@ -505,14 +675,29 @@ def pad_images(prop, raw_frame, pad_val=10):
 
 
 def angle_between(v1, v2):
-    """ angle between vectors v1 and v2 """
+    """angle between vectors v1 and v2.
+
+    Args:
+        v1:
+        v2:
+
+    Returns:
+
+    """
     v1_u = unit_vector(v1)
     v2_u = unit_vector(v2)
     return np.degrees(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)))
 
 
 def unit_vector(vector):
-    """  unit vector of the vector """
+    """unit vector of the vector.
+
+    Args:
+        vector:
+
+    Returns:
+
+    """
     # true divide error not solved in some cases
     return vector / np.linalg.norm(vector)
 

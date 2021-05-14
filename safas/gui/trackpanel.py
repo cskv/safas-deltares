@@ -5,28 +5,40 @@ Created on Mon Nov 25 05:18:31 2019
 @author: Ryan
 """
 
+import sys
+
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import os
-from glob import glob
-import pandas as pd
+# import os
+# from glob import glob
+# import pandas as pd
 
-from shutil import copyfile 
+# from shutil import copyfile
 
 from safas.gui.paramsdialog import ParamsDialog
 from safas.gui.matcherdialog import MatcherDialog
 from safas.gui.savedialog import SaveDialog
 from safas.gui.makeplot import MakePlot
 from safas.gui.mergepanel import MergePanel
+
 Xp = 0.12
 
-class TrackPanel(QMainWindow):
 
+class TrackPanel(QMainWindow):
     status_update_signal = pyqtSignal(str, name="status_update_signal")
 
     def __init__(self, parent=None, params=None, params_file=None, *args, **kwargs):
+        """
+
+        Args:
+            parent:
+            params:
+            params_file:
+            *args:
+            **kwargs:
+        """
         super().__init__(*args, **kwargs)
 
         # parent is the Stream object
@@ -41,29 +53,37 @@ class TrackPanel(QMainWindow):
         self.layout = QGridLayout()
         self.setup_control_panel()
         self.setup_track_control()
-        #self.setup_mode_panel()
+        # self.setup_mode_panel()
         self.filter_control_panel()
 
         w = QWidget()
         w.setLayout(self.layout)
         self.setCentralWidget(w)
 
-        x = int(self.parent.dt_width*Xp)
-        y = int(self.parent.dt_height*0.8325)
-        w = int(self.parent.dt_width*0.8)
-        h = int(self.parent.dt_height*0.05)
+        x = int(self.parent.dt_width * Xp)
+        y = int(self.parent.dt_height * 0.8325)
+        w = int(self.parent.dt_width * 0.8)
+        h = int(self.parent.dt_height * 0.05)
         self.setGeometry(x, y, w, h)
-
 
         self.setMaximumWidth(self.parent.dt_width)
         self.show()
         self.pop_filt()
 
-    def setup(self,):
+    def setup(self, ):
+        """
+
+        Returns:
+
+        """
         self.tracks = TrackLists(parent=self.parent)
 
     def setup_mode_panel(self):
-        """ enable/disable NEW, OPEN,TRACKS"""
+        """enable/disable NEW, OPEN,TRACKS.
+
+        Returns:
+
+        """
         top_layout_2 = QGridLayout()
         ctrl_groupbox = QGroupBox('modes')
 
@@ -76,25 +96,42 @@ class TrackPanel(QMainWindow):
 
         self.mode_boxes = {'manual': None,
                            'find-one': None,
-                           'find-all': cb1,}
+                           'find-all': cb1, }
 
         ctrl_groupbox.setLayout(top_layout_2)
         self.layout.addWidget(ctrl_groupbox, 0, 3)
 
     def mode_radio_clicked(self, event=None, **kwargs):
+        """
+
+        Args:
+            event:
+            **kwargs:
+
+        Returns:
+
+        """
         radioButton = self.sender()
         if radioButton.isChecked():
             self.parent.params['tracker_control']['mode'] = radioButton.mode
 
-
     def pop_filt(self):
-        """ """
+        """
+
+        Returns:
+
+        """
         if 'filter' in self.parent.params['improcess']:
             filt = self.parent.params['improcess']['filter']
             index = self.filter_combo.findText(filt)
             self.filter_combo.setCurrentIndex(index)
 
     def filter_control_panel(self):
+        """
+
+        Returns:
+
+        """
         top_layout_2 = QHBoxLayout()
         ctrl_groupbox = QGroupBox('image filter')
 
@@ -110,18 +147,30 @@ class TrackPanel(QMainWindow):
         self.layout.addWidget(ctrl_groupbox, 0, 0)
 
     def list_filters(self):
-        """ update the selected filter """
+        """update the selected filter.
+
+        Returns:
+
+        """
         self.filter_combo.addItems(self.parent.list_filters())
 
     def change_filter(self):
-        """ select filter from list """
+        """select filter from list.
+
+        Returns:
+
+        """
         print('updating filter to ', self.filter_combo.currentText())
         self.parent.params['improcess']['filter'] = self.filter_combo.currentText()
         # need to load the filter as well?
         self.parent.handler.get_filter(name=self.parent.params['improcess']['filter'])
 
     def setup_track_control(self):
-        """ tracking related buttons"""
+        """tracking related buttons.
+
+        Returns:
+
+        """
         top_layout_2 = QHBoxLayout()
 
         ctrl_groupbox = QGroupBox('track control')
@@ -149,6 +198,11 @@ class TrackPanel(QMainWindow):
         self.layout.addWidget(ctrl_groupbox, 0, 1)
 
     def setup_control_panel(self):
+        """
+
+        Returns:
+
+        """
         top_layout_2 = QHBoxLayout()
 
         ctrl_groupbox = QGroupBox('video control')
@@ -174,28 +228,64 @@ class TrackPanel(QMainWindow):
         self.layout.addWidget(ctrl_groupbox, 0, 2)
 
     def text_clicked(self, value, key='improcess'):
+        """
+
+        Args:
+            value:
+            key:
+
+        Returns:
+
+        """
         rb = self.sender()
         if rb.name in ['n_frames']:
-            if rb.text =='':
-                rb = 2 # enforce min number of frames
+            if rb.text == '':
+                rb = 2  # enforce min number of frames
             self.parent.params[key][rb.name] = int(rb.text())
 
     def radio_clicked(self, value, key='improcess', **kwargs):
+        """
+
+        Args:
+            value:
+            key:
+            **kwargs:
+
+        Returns:
+
+        """
         rb = self.sender()
         if rb.isChecked():
             self.parent.params[key][rb.name] = rb.value
 
     def match_control_panel(self):
+        """
+
+        Returns:
+
+        """
         self.matcherdialog = MatcherDialog(parent=self, params=self.parent.params['matcher'])
         self.matcherdialog.params_update_signal.connect(self.matcher_params_update)
         self.matcherdialog.setup()
-    
+
     def save_params_update(self, params):
+        """
+
+        Args:
+            params:
+
+        Returns:
+
+        """
         self.parent.params = params
-        
+
     def click_save(self):
-        """ """
-        if self.parent.handler.tracker.frame_index != None:
+        """
+
+        Returns:
+
+        """
+        if self.parent.handler.tracker.frame_index is not None:
             # filters if save pressed before analysis starts
             if self.parent.params['save']['confirm']:
                 self.savedialog = SaveDialog(parent=self, params=self.parent.params)
@@ -206,39 +296,70 @@ class TrackPanel(QMainWindow):
             if not self.parent.params['save']['confirm']:
                 self.save_tracker()
 
-    def save_tracker(self,):
+    def save_tracker(self, ):
+        """
+
+        Returns:
+
+        """
         self.parent.handler.tracker.save()
 
         if self.parent.params['save']['clear']:
             self.parent.restart_tracks()
 
     def click_merge(self):
-        """ click files to merge """
+        """click files to merge.
+
+        Returns:
+
+        """
         self.mergepanel = MergePanel(parent=self)
         self.mergepanel.show()
-        
+
     def click_next(self):
-        """ """
+        """
+
+        Returns:
+
+        """
         self.parent.viewer.next_frame()
 
     def click_list_tracks(self):
-        """ reopens the list if closed"""
+        """reopens the list if closed.
+
+        Returns:
+
+        """
         self.tracks.vis()
 
     def click_clear_tracks(self):
+        """
+
+        Returns:
+
+        """
         msg = 'Clear the tracks? Consider to save the data before deleting.'
-        buttonReply = QMessageBox.question(self, 'clear objects message', msg, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        buttonReply = QMessageBox.question(self, 'clear objects message', msg, QMessageBox.Yes | QMessageBox.No,
+                                           QMessageBox.No)
 
         if buttonReply == QMessageBox.Yes:
             self.parent.restart_tracks()
 
     def make_plot(self):
-        """ read the output and plot results in saved dataframe   """
-        basedir=self.parent.params['output']
+        """read the output and plot results in saved dataframe.
+
+        Returns:
+
+        """
+        basedir = self.parent.params['output']
         self.plotwin = MakePlot(parent=self.parent, basedir=basedir)
 
     def click_params_dialog(self):
-        """ """
+        """
+
+        Returns:
+
+        """
         imfilter = self.parent.handler.imfilter
         self.paramsdialog = ParamsDialog(parent=self, imfilter=imfilter)
         self.paramsdialog.params_test_signal.connect(self.params_test)
@@ -246,21 +367,50 @@ class TrackPanel(QMainWindow):
         self.paramsdialog.setup()
 
     def params_test(self, params, **kwargs):
+        """
+
+        Args:
+            params:
+            **kwargs:
+
+        Returns:
+
+        """
         H = self.parent.handler
         H.get_frame(H.frame_index, mode='test', params=params)
 
     def filter_params_update(self, params, **kwargs):
-        """ update params from user input """
+        """update params from user input.
+
+        Args:
+            params:
+            **kwargs:
+
+        Returns:
+
+        """
         # need a work around to get pass the NN through
         temp_params = self.parent.params['improcess']['kwargs']
         self.parent.params['improcess']['kwargs'] = params
 
     def matcher_params_update(self, params, **kwargs):
-        """ update params from user input """
+        """update params from user input.
+
+        Args:
+            params:
+            **kwargs:
+
+        Returns:
+
+        """
         self.parent.params['matcher'] = params
 
     def click_exit_track(self):
-        """ """
+        """
+
+        Returns:
+
+        """
         if self.paramsdialog:
             self.paramsdialog.destroy()
         if self.matcherdialog:
@@ -274,6 +424,16 @@ class TrackPanel(QMainWindow):
             sys.exit(0)
 
     def add_radio(self, name, label, defval):
+        """
+
+        Args:
+            name:
+            label:
+            defval:
+
+        Returns:
+
+        """
         layout = QGridLayout()
         groupbox = QGroupBox('')
         groupbox.setAlignment(Qt.AlignCenter)
@@ -305,13 +465,23 @@ class TrackPanel(QMainWindow):
 
         return groupbox
 
+
 class TrackLists(QMainWindow):
     status_update_signal = pyqtSignal(str, name="status_update_signal")
     newopen_outline_signal = pyqtSignal(object, int, name="sinle_outline_signal")
 
     def __init__(self, parent=None, params=None, params_file=None, *args, **kwargs):
+        """
+
+        Args:
+            parent:
+            params:
+            params_file:
+            *args:
+            **kwargs:
+        """
         super(TrackLists, self).__init__(*args, **kwargs)
-        self.parent=parent
+        self.parent = parent
         self.setWindowTitle('tracklists')
 
         self.layout = QGridLayout()
@@ -320,10 +490,10 @@ class TrackLists(QMainWindow):
         w.setLayout(self.layout)
         self.setCentralWidget(w)
 
-        x = int(self.parent.dt_width*Xp)
-        y = int(self.parent.dt_height*0.05)
-        w = int(self.parent.dt_width*0.145)
-        h = int(self.parent.dt_height*0.75)
+        x = int(self.parent.dt_width * Xp)
+        y = int(self.parent.dt_height * 0.05)
+        w = int(self.parent.dt_width * 0.145)
+        h = int(self.parent.dt_height * 0.75)
         self.setGeometry(x, y, w, h)
         self.show()
 
@@ -334,9 +504,19 @@ class TrackLists(QMainWindow):
         self.current_open = None
 
     def vis(self):
+        """
+
+        Returns:
+
+        """
         self.show()
 
     def set_shortcuts(self):
+        """
+
+        Returns:
+
+        """
         link = QShortcut(QKeySequence("l"), self)
         link.activated.connect(self.link_pair)
         newtrack = QShortcut(QKeySequence("a"), self)
@@ -349,7 +529,11 @@ class TrackLists(QMainWindow):
                           'predictone': predictone}
 
     def setup_lists(self):
-        """ """
+        """
+
+        Returns:
+
+        """
         top_layout_2 = QGridLayout()
 
         ctrl_groupbox = QGroupBox()
@@ -381,7 +565,14 @@ class TrackLists(QMainWindow):
         self.layout.addWidget(ctrl_groupbox, 1, 1)
 
     def handle(self, **kwargs):
-        """ step to take after image is filtered and labelled """
+        """step to take after image is filtered and labelled.
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         self.list_new()
         self.list_open()
 
@@ -399,11 +590,11 @@ class TrackLists(QMainWindow):
                     self.parent.track_panel.setEnabled(False)
                     for key in self.shortcuts:
                         self.shortcuts[key].setEnabled(False)
-                    
+
                     # +1 to index to avoid adding same object twice
                     self.Ni = index + 1
                     self.Nf = N + index
-                    
+
                     # list is watched in wait_queue_finished
                     self.all_inds = list(range(self.Ni, self.Nf))
 
@@ -416,9 +607,18 @@ class TrackLists(QMainWindow):
                 self.status_update_signal.emit('no objects to track')
 
     def wait_queue_finished(self, frame, index, **kwargs):
-        """ process queue and wait for index of last frame to arrive
-                before updating viewer and releasing GUI """
-        if index == (self.Nf-1):
+        """process queue and wait for index of last frame to arrive
+                before updating viewer and releasing GUI.
+
+        Args:
+            frame:
+            index:
+            **kwargs:
+
+        Returns:
+
+        """
+        if index == (self.Nf - 1):
             self.last_frame = frame
             self.last_index = index
 
@@ -428,7 +628,7 @@ class TrackLists(QMainWindow):
             for i in range(self.Ni, self.Nf):
                 self.parent.handler.tracker.predict_next_all(i)
 
-            self.parent.handler.frame_index = self.Nf-1
+            self.parent.handler.frame_index = self.Nf - 1
             self.parent.handler.contour_img = self.last_frame
 
             for key in self.shortcuts:
@@ -451,30 +651,55 @@ class TrackLists(QMainWindow):
             self.new_objs.addItems([str(v) for v in range(vals)])
 
     def list_open(self, val=None, action='add', **kwargs):
-        """ most recent objects added to tracks"""
+        """most recent objects added to tracks.
+
+        Args:
+            val:
+            action:
+            **kwargs:
+
+        Returns:
+
+        """
         self.open_objs.clear()
         vals = self.parent.handler.tracker.list_open()
         if vals is not None:
             self.open_objs.addItems([str(v) for v in vals])
 
     def transfer_new(self, val=None, action='add', **kwargs):
-        """  on double-click, or 'a' key, transfer object to track list """
+        """on double-click, or 'a' key, transfer object to track list.
+
+        Args:
+            val:
+            action:
+            **kwargs:
+
+        Returns:
+
+        """
         val_track, val_open, val_new = self.get_obj_pair(src='open')
 
         if val_new is not None:
-             self.tracks.clear()
-             frame_index = self.parent.handler.tracker.frame_index
-             self.parent.handler.tracker.add_object(frame_index, val_new)
-             number_tracks = self.parent.handler.tracker.n_tracks()
+            self.tracks.clear()
+            frame_index = self.parent.handler.tracker.frame_index
+            self.parent.handler.tracker.add_object(frame_index, val_new)
+            number_tracks = self.parent.handler.tracker.n_tracks()
 
-             if number_tracks is not None:
-                 self.tracks.addItems([str(v) for v in range(number_tracks)])
+            if number_tracks is not None:
+                self.tracks.addItems([str(v) for v in range(number_tracks)])
 
-             qlist = self.new_objs
-             qlist.takeItem(self.new_objs.currentRow())
+            qlist = self.new_objs
+            qlist.takeItem(self.new_objs.currentRow())
 
     def link_pair(self, **kwargs):
-        """ link the selected objects in new and open lists """
+        """link the selected objects in new and open lists.
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         val_track, val_open, val_new = self.get_obj_pair(src='open')
         frame = self.parent.handler.contour_img
         index = self.parent.handler.frame_index
@@ -485,13 +710,20 @@ class TrackLists(QMainWindow):
                                                         id_curr=val_new)
 
     def get_obj_pair(self, src='open'):
-        """ retrieve selected objects in the new and open lists """
+        """retrieve selected objects in the new and open lists.
+
+        Args:
+            src:
+
+        Returns:
+
+        """
         val_new = self.new_objs.currentItem()
 
         if val_new is not None:
             val_new = int(val_new.text())
 
-        if src=='open':
+        if src == 'open':
             val_open = self.open_objs.currentItem()
 
             if val_open != None:
@@ -501,7 +733,7 @@ class TrackLists(QMainWindow):
             else:
                 val_open, val_track = None, None
 
-        if src=='tracks':
+        if src == 'tracks':
             val_track = self.tracks.currentItem()
 
             if val_track != None:
@@ -511,10 +743,21 @@ class TrackLists(QMainWindow):
             else:
                 val_open, val_track = None, None
 
-        return (val_track, val_open, val_new)
+        return val_track, val_open, val_new
 
     def outline_pair(self, val, update_vals=True, val_new=None, val_open=None, **kwargs):
-        """ outline a single new and open object highlight to user for linking """
+        """outline a single new and open object highlight to user for linking.
+
+        Args:
+            val:
+            update_vals:
+            val_new:
+            val_open:
+            **kwargs:
+
+        Returns:
+
+        """
         if update_vals:
             val_track, val_open, val_new = self.get_obj_pair(src='open')
 
@@ -529,12 +772,20 @@ class TrackLists(QMainWindow):
                                  val_open=val_open)
 
     def outline_track(self, **kwargs):
-        """ highlight a single track when selected in tracks list box """
+        """highlight a single track when selected in tracks list box.
+
+        Args:
+            **kwargs:
+
+        Returns:
+
+        """
         frame = self.parent.handler.contour_img
         index = self.parent.handler.frame_index
         tracker = self.parent.handler.tracker
         val_track_out = list(tracker.tracks['id'])
         tracker.outline_track(frame.copy(), index, id_obj=val_track_out)
+
 
 def main(params=None, params_file=None):
     global app
@@ -542,5 +793,12 @@ def main(params=None, params_file=None):
     window = TrackPanel(params=params, params_file=params_file)
     app.exec_()
 
+
 if __name__ == '__main__':
     main()
+    """
+    app = QApplication([])
+    w = TrackPanel(params=None, params_file=None)
+    w.show()
+    app.exec_()
+    """
