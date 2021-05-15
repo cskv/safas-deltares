@@ -726,7 +726,7 @@ class TrackLists(QMainWindow):
         if src == 'open':
             val_open = self.open_objs.currentItem()
 
-            if val_open != None:
+            if val_open is not None:
                 val_open = int(val_open.text())
                 val_track = self.open_objs.currentRow()
                 self.tracks.setCurrentRow(val_track)
@@ -736,7 +736,7 @@ class TrackLists(QMainWindow):
         if src == 'tracks':
             val_track = self.tracks.currentItem()
 
-            if val_track != None:
+            if val_track is not None:
                 val_track = int(val_track.text())
                 val_open = self.tracks.currentRow()
                 self.open_objs.setCurrentRow(val_open)

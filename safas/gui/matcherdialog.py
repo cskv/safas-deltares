@@ -6,12 +6,13 @@ Match Control
 """
 
 import sys
-import os
-import numpy as np
+# import os
+# import numpy as np
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+
 
 class MatcherDialog(QMainWindow):
 
@@ -23,7 +24,7 @@ class MatcherDialog(QMainWindow):
 
         self.parent = parent
 
-        if params != None:
+        if params is not None:
             self.params = params
         
         self.init_params()        
@@ -87,7 +88,6 @@ class MatcherDialog(QMainWindow):
         """ """
         top_layout_2 = QGridLayout()
         ctrl_groupbox = QGroupBox('object area')
-        
 
         groupbox = self.add_radio(dispname='', name='area', defval=True)
         top_layout_2.addWidget(groupbox, self.y, 0)
@@ -175,8 +175,8 @@ class MatcherDialog(QMainWindow):
 
         slider.setFocusPolicy(Qt.StrongFocus)
         slider.setTickPosition(QSlider.TicksBothSides)
-        slider.setTickInterval(0.1)
-        slider.setSingleStep(step)
+        slider.setTickInterval(0.1)        # error? int?
+        slider.setSingleStep(step)         # error?
         slider.label = value
         slider.setMinimum(vmin)
         slider.setMaximum(vmax)
@@ -184,7 +184,7 @@ class MatcherDialog(QMainWindow):
         slider.name = name
 
         slider.valueChanged.connect(self.slider_update)
-        layout.addWidget(label, 0,0)
+        layout.addWidget(label, 0, 0)
         layout.addWidget(value, 0, 1)
         layout.addWidget(slider, 1, 0)
         groupbox.setLayout(layout)
@@ -193,7 +193,7 @@ class MatcherDialog(QMainWindow):
     def slider_update(self, val, **kwargs):
         """udpate gui and params from slider """
         if self.sender().name in ['distance', 'area']:
-            val = val/100 # scale result
+            val = val/100  # scale result
             
         self.params_temp[self.sender().name] = val
         self.sender().label.setText(str(val))
@@ -245,7 +245,7 @@ class MatcherDialog(QMainWindow):
                                            QMessageBox.No)
         if buttonReply == QMessageBox.Yes:
             self.destroy()
-            if self.parent == None:
+            if self.parent is None:
                 sys.exit(0)
 
 

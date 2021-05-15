@@ -12,12 +12,13 @@ note:
     * call the __globals__ on the
 """
 import sys
-import os
-import numpy as np
+# import os
+# import numpy as np
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+
 
 class ParamsDialog(QMainWindow):
     
@@ -31,10 +32,10 @@ class ParamsDialog(QMainWindow):
         self.parent = parent
         self.imfilter = imfilter
 
-        if parent != None:
+        if parent is not None:
             self.parent = parent
-           # self.params = parent.params
-        if params != None:
+            # self.params = parent.params
+        if params is not None:
             self.params = params
 
         self.y = 0
@@ -74,7 +75,7 @@ class ParamsDialog(QMainWindow):
         self.layout.addWidget(ctrl_groupbox, self.y, 0)
         self.y += 1
         self.buttons = {}
-        self.buttons['control'] = {'udpatetButton': updateButton,
+        self.buttons['control'] = {'updateButton': updateButton,
                                    'saveButton': saveButton,
                                    'exitButton': exitButton,
                                    }
@@ -172,7 +173,7 @@ class ParamsDialog(QMainWindow):
         slider.name = name
 
         slider.valueChanged.connect(self.slider_update)
-        layout.addWidget(label, 0,0)
+        layout.addWidget(label, 0, 0)
         layout.addWidget(value, 0, 1)
         layout.addWidget(slider, 1, 0)
         groupbox.setLayout(layout)
@@ -184,18 +185,20 @@ class ParamsDialog(QMainWindow):
         self.sender().label.setText(str(val))
 
     def exit_dialog(self, event=None):
-        buttonReply = QMessageBox.question(self, 'PyQt5 message', "Close filter parameters dialog?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        buttonReply = QMessageBox.question(self, 'PyQt5 message', "Close filter parameters dialog?",
+                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if buttonReply == QMessageBox.Yes:
             self.destroy()
-            if self.parent == None:
+            if self.parent is None:
                 sys.exit(0)
 
+
 def main(params=None, imfilter=None):
-   """ run stand-alone for testing """
-   app = QApplication([])
-   w = ParamsDialog(parent=None, params=params, imfilter=imfilter)
-   w.show()
-   sys.exit(app.exec_())
+    """ run stand-alone for testing """
+    app = QApplication([])
+    w = ParamsDialog(parent=None, params=params, imfilter=imfilter)
+    w.show()
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
