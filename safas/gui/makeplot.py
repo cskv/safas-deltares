@@ -10,11 +10,14 @@ from glob import glob
 
 from matplotlib import pyplot as plt
 import pandas as pd
-import numpy as np
+# import numpy as np
 
-from PyQt5.QtGui import *
+# from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+
+
+# from PyQt5.QtCore import *
+
 
 class MakePlot(QMainWindow):
     def __init__(self, parent=None, basedir=None, file=None, *args, **kwargs):
@@ -25,7 +28,7 @@ class MakePlot(QMainWindow):
         self.basedir = basedir
 
         self.setWindowTitle('plot gui')
-        #app.aboutToQuit.connect(self.exit_dialog)
+        # app.aboutToQuit.connect(self.exit_dialog)
         self.layout = QGridLayout()
         w = QWidget()
         w.setLayout(self.layout)
@@ -38,10 +41,10 @@ class MakePlot(QMainWindow):
 
         if self.dataframe is not None:
             self.setup_window()
-            x=int(self.parent.dt_height*0.02)
-            y=int(self.parent.dt_width*0.02)
-            w=int(self.parent.dt_width*0.02)
-            h=int(self.parent.dt_height*0.05)
+            x = int(self.parent.dt_height * 0.02)
+            y = int(self.parent.dt_width * 0.02)
+            w = int(self.parent.dt_width * 0.02)
+            h = int(self.parent.dt_height * 0.05)
 
             self.setGeometry(x, y, w, h)
             self.show()
@@ -99,7 +102,7 @@ class MakePlot(QMainWindow):
         self.dataframe = pd.read_excel(self.file)
 
     def make_plot(self):
-        f, ax = plt.subplots(1,1, figsize=(3.5, 2.2), dpi=250)
+        f, ax = plt.subplots(1, 1, figsize=(3.5, 2.2), dpi=250)
 
         xdata = self.dataframe[self.xvar]
         ydata = self.dataframe[self.yvar]
@@ -126,23 +129,25 @@ class MakePlot(QMainWindow):
         self.f.savefig(fname, dpi=900)
 
     def exit_dialog(self, event=None):
-        buttonReply = QMessageBox.question(self, 'PyQt5 message', "Close plot dialog?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        buttonReply = QMessageBox.question(self, 'PyQt5 message', "Close plot dialog?",
+                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if buttonReply == QMessageBox.Yes:
             self.destroy()
-            if self.parent == None:
+            if self.parent is None:
                 sys.exit(0)
 
 
 def main(dirout=None):
-   """ run stand-alone for testing """
-   global app
-   app = QApplication([])
-   w = MakePlot(basedir=dirout)
-   w.show()
-   sys.exit(app.exec_())
+    """ run stand-alone for testing """
+    global app
+    app = QApplication([])
+    w = MakePlot(basedir=dirout)
+    w.show()
+    sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     print('setup a small gui for plot control')
-    dirout='C:/Users/Ryan/Desktop/Data/pro/2019-12-06_00.53.51'
+    dirout = 'C:/Users/Ryan/Desktop/Data/pro/2019-12-06_00.53.51'
     main(dirout=dirout)
