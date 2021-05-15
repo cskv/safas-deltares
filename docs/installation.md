@@ -9,7 +9,7 @@ Setup before install:
 ## Virtual environment
 Download or pull (with git) the Safas package master branch from the command line or by pressing the green "Clone or Download" button at the top right-hand side of the page:
 
-<https://github.com/cskv/safas_deltares>
+<https://github.com/cskv/safas-deltares>
 
 Open a command prompt in the downloaded Safas package. The file 'environment.yml' will be used to prepare a conda virtual environment using the following command:
 
