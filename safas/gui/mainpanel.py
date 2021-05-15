@@ -10,18 +10,20 @@ mainpanel.py
 import os
 import sys
 
-import time
-import cv2
+# import time
+# import cv2
 import yaml
 
-from PyQt5.QtGui import *
+# from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import safas
 from safas.comp.stream import Stream
-from safas.gui.trackpanel import TrackPanel
-from safas.comp.setconfig import set_dirout
+
+
+# from safas.gui.trackpanel import TrackPanel
+# from safas.comp.setconfig import set_dirout
 
 
 class MainPanel(QMainWindow):
@@ -45,14 +47,14 @@ class MainPanel(QMainWindow):
         self.setup_io_panel()
         self.setup_control_panel()
 
-        dims = [int(self.dt_height*0.04), int(self.dt_height*0.1)]
+        dims = [int(self.dt_height * 0.04), int(self.dt_height * 0.1)]
         widget = QLabel('...')
         self.stream_status = self.panel(dims,
                                         pos=2,
                                         title='status',
                                         widget=widget)
 
-        dims = [int(self.dt_height*0.3), int(self.dt_height*0.5)]
+        dims = [int(self.dt_height * 0.3), int(self.dt_height * 0.5)]
         widget = QTextEdit()
         self.params_status = self.panel(dims,
                                         pos=3,
@@ -70,11 +72,11 @@ class MainPanel(QMainWindow):
         w = QWidget()
         w.setLayout(self.layout)
         self.setCentralWidget(w)
-        x=int(self.dt_width*0.02)
-        y=int(self.dt_height*0.05)
+        x = int(self.dt_width * 0.02)
+        y = int(self.dt_height * 0.05)
 
-        w=int(self.dt_width*0.25)
-        h=int(self.dt_height*0.75)
+        w = int(self.dt_width * 0.25)
+        h = int(self.dt_height * 0.75)
 
         self.setGeometry(x, y, w, h)
 
@@ -157,7 +159,7 @@ class MainPanel(QMainWindow):
     def update_io_status(self):
         """ update input, output, params, script displays """
         params = self.stream.params
-        if params['input'] ==0:
+        if params['input'] == 0:
             self.file_status['input'].setText(str(params['basein']))
         else:
             self.file_status['input'].setText(str(params['input']))
@@ -182,16 +184,17 @@ class MainPanel(QMainWindow):
         tx = self.file_status['input'].text()
 
         if val == 'directory':
-            file = str(QFileDialog.getExistingDirectory(self, "select Directory", tx))
-            self.stream.params['input'] = file
+            f = str(QFileDialog.getExistingDirectory(self, "select Directory", tx))
+            self.stream.params['input'] = f
 
         if val == 'file':
-            file = QFileDialog.getOpenFileName(self, "open file", tx, "image Files (*.avi *.mp4 *.png *.jpg *.tif *.bmp)")
-            self.stream.params['input'] = file[0]
+            f = QFileDialog.getOpenFileName(self, "open file", tx,
+                                            "image Files (*.avi *.mp4 *.png *.jpg *.tif *.bmp)")
+            self.stream.params['input'] = f[0]
 
         if self.stream.params['input'] != 0:
             self.file_status['input'].setText(self.stream.params['input'])
-            #self.buttons['view'].setEnabled(True)
+            # self.buttons['view'].setEnabled(True)
             self.update_params_status()
 
     @pyqtSlot(QAction)
@@ -203,41 +206,42 @@ class MainPanel(QMainWindow):
         if self.stream.params['baseout'] == 0:
             msg = 'Base output directory not set. Please select a directory.'
             buttonReply = QMessageBox.question(self,
-                                           'message',
-                                           msg,
-                                           QMessageBox.Ok | QMessageBox.Cancel,
-                                           QMessageBox.Ok)
-            
+                                               'message',
+                                               msg,
+                                               QMessageBox.Ok | QMessageBox.Cancel,
+                                               QMessageBox.Ok)
+
             if buttonReply == QMessageBox.Ok:
                 # set a basein directory for saving files
-                baseout = str(QFileDialog.getExistingDirectory(self, "select Directory",))
-            
+                baseout = str(QFileDialog.getExistingDirectory(self, "select Directory", ))
+
                 print('directory selected:', baseout)
-                
+
                 self.stream.params['baseout'] = baseout
-            
+
             msg = 'Consider setting baseout in safas/config.yaml'
             buttonReply = QMessageBox.question(self,
-                                           'message',
-                                           msg,
-                                           QMessageBox.Ok,
-                                           QMessageBox.Ok)
-            
+                                               'message',
+                                               msg,
+                                               QMessageBox.Ok,
+                                               QMessageBox.Ok)
+
         if action is not None:
             val = action.text()
             dir_name = None
-            
+
             if val == 'named':
                 # get name extension for the output directory, otherwise a timestamp is used
-                text, okPressed = QInputDialog.getText(self, "Enter directory name","Directory name:", QLineEdit.Normal, "")
-    
+                text, okPressed = QInputDialog.getText(self, "Enter directory name", "Directory name:",
+                                                       QLineEdit.Normal, "")
+
                 if okPressed and text != '':
                     text = str(text)
                     dir_name = text.replace(' ', '_')
-        
+
             # create output directory if 'output' button was clicked
             self.stream.set_output(dir_name=dir_name)
-            
+
         self.update_io_status()
         self.update_params_status()
 
@@ -249,11 +253,11 @@ class MainPanel(QMainWindow):
         tx = None
         if self.stream.params['basein'] != 0:
             tx = self.stream.params['basein']
-        file = QFileDialog.getOpenFileName(self,
-                                           "Select config file",
-                                           tx,
-                                           "YAML files (*.yml *.yaml)")
-        self.stream.config(params_file=file[0])
+        f = QFileDialog.getOpenFileName(self,
+                                        "Select config file",
+                                        tx,
+                                        "YAML files (*.yml *.yaml)")
+        self.stream.config(params_file=f[0])
         self.update_io_status()
         self.update_params_status()
 
@@ -277,7 +281,7 @@ class MainPanel(QMainWindow):
         if hasattr(self, 'params_file'):
             self.file_status['params'].setText(params['params_file'])
 
-    def click_setup(self) :
+    def click_setup(self):
         """ setup the stream and handler components """
         tx = self.buttons['setup'].text()
 
@@ -286,17 +290,17 @@ class MainPanel(QMainWindow):
             if ret:
                 self.buttons['setup'].setText('release')
                 self.buttons['view'].setEnabled(True)
-                for str in ['input', 'params', 'output','track']:
-                    self.buttons[str].setEnabled(False)
+                for s in ['input', 'params', 'output', 'track']:
+                    self.buttons[s].setEnabled(False)
 
         if tx == 'release':
             # prompt to stop...
             msg = 'Stop analysis and close windows? Unsaved data will be lost'
             buttonReply = QMessageBox.question(self,
-                                           'message',
-                                           msg,
-                                           QMessageBox.Yes | QMessageBox.No,
-                                           QMessageBox.No)
+                                               'message',
+                                               msg,
+                                               QMessageBox.Yes | QMessageBox.No,
+                                               QMessageBox.No)
 
             if buttonReply == QMessageBox.Yes:
                 self.stream.stop()
@@ -306,8 +310,8 @@ class MainPanel(QMainWindow):
                 self.buttons['track'].setEnabled(False)
                 self.stream_status.setText('video released.')
 
-                for str in ['input','output','params']:
-                    self.buttons[str].setEnabled(True)
+                for s in ['input', 'output', 'params']:
+                    self.buttons[s].setEnabled(True)
 
     def click_view(self):
         """ open viewer for image stream """
@@ -321,9 +325,9 @@ class MainPanel(QMainWindow):
     def click_track(self):
         """ load the track panel GUI for user control """
         # check if baseout has been set
-        if self.stream.params['baseout'] == 0: 
+        if self.stream.params['baseout'] == 0:
             self.setup_output()
-        else: 
+        else:
             self.update_status('process the stream')
             self.stream.track()
             self.buttons['track'].setEnabled(False)
@@ -335,12 +339,14 @@ class MainPanel(QMainWindow):
         self.destroy()
         sys.exit(0)
 
+
 def main(config_file):
     """ for testing run stand-alone"""
     global app
     app = QApplication([])
     window = MainPanel(config_file=config_file)
     app.exec_()
+
 
 if __name__ == '__main__':
     file = os.path.dirname(safas.__file__)
