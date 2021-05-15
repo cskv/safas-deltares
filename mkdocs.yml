@@ -1,6 +1,7 @@
 site_name: safas-deltares
 
-theme: readthedocs
+theme: 
+  name: readthedocs
 edit_uri: docs/
 nav:
 - Overview: 'index.md'
