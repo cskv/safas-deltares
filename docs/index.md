@@ -1,4 +1,4 @@
-# safas-deltares
+# Safas-deltares
 
 Safas-deltares is **s**edimentation **a**nd **f**loc **a**nalysis **s**oftware, a Python package for processing and interpretation of images and videos of floc sedimentation.
 
