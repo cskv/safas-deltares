@@ -623,7 +623,7 @@ class Tracker(QObject):
                                'velocity': np.append(0, v),
                                'match_error': match_errors,
                                'vel_vert': np.append(0, vect2[:, 0]),
-                               'vel_hor': np.append(0, vect2[:, 1])
+                               'vel_hor': np.append(0, vect2[:, 1])    # added vert and hor velocity
                                }
                 self.track_stats[i] = pd.DataFrame(track_stats)
 
