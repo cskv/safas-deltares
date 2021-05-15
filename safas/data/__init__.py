@@ -2,90 +2,86 @@
 Load test images.
 
 Note: this is the same loader mechanism used by scikit-image
-
+See: https://github.com/scikit-image/scikit-image/blob/main/skimage/data/__init__.py
 """
 
-import os as _os
+# import os as _os
 # import skimage
 # import numpy as np
 # from warnings import warn
 import pandas as pd
 
-import os.path as osp
-data_dir = osp.abspath(osp.dirname(__file__))
+import os
+data_dir = os.path.abspath(os.path.dirname(__file__))
 
 __all__ = ['mudflocs']
 
 
 def _load(f, as_gray=False):
     """Load an image file located in the data directory.
-    Parameters
-    ----------
-    f : string
-        File name.
-    as_gray : bool, optional
-        Whether to convert the image to grayscale.
-    Returns
-    -------
-    img : ndarray
-        Image loaded from ``skimage.data_dir``.
+
+    Args:
+        f (str):         File name.
+        as_gray (bool):  optional, True if conversion of the image to grayscale is needed.
+
+    Returns:
+        (ndarray):       Image loaded from ``safas.data_dir``.
     """
     # importing io is quite slow since it scans all the backends
     # we lazy import it here
     from skimage.io import imread
-    return imread(_os.path.join(data_dir, f), plugin='pil', as_gray=as_gray)
+    return imread(os.path.join(data_dir, f), plugin='pil', as_gray=as_gray)
 
 
 def noisy():
-    """Noisy gray level floc image
+    """fetches noisy image.
+
+    Returns:
+        (ndarray): Noisy gray level floc image.
     """
     return _load("noisy.png")
 
 
 def mudflocs():
-    """Gray-level "mudflocs" image.
-    Example image of mud flocs in settling colum.
-    Higher number density
-    Returns
-    -------
-    camera : (1000, 1000, 3) uint8 ndarray
+    """ fetches mudfloc image.
+
+    Returns:
+        Gray-level "mudflocs" image. Example image of mud flocs in settling column.
+        Higher number density. camera : (1000, 1000, 3) uint8 ndarray
         Mudflocs image.
     """
     return _load("mudflocs.png")
 
 
 def clayflocs():
-    """Gray-level "clayflocs" image.
-    Example image of clay flocs in settling colum.
-    Lower number density
-    Returns
-    -------
-    camera : (1000, 1000) uint8 ndarray
+    """fetches clayflocs image.
+
+    Returns:
+        Gray-level "clayflocs" image. Example image of clay flocs in settling column.
+        Lower number density. camera : (1000, 1000) uint8 ndarray
         clayflocs image.
     """
     return _load("clayflocs.png")
 
 
 def brightmudflocs():
-    """Gray-level "clayflocs" image.
-    Example image of clay flocs in settling colum.
-    Brighter light source w. mean approx. 225 on uint8 scale
+    """fetches brightmudflocs image.
 
-    Returns
-    -------
-    camera : (1000, 1000, 3) uint8 ndarray
+    Returns:
+        Gray-level "clayflocs" image. Example image of clay flocs in settling colum.
+        Brighter light source w. mean approx. 225 on uint8 scale.
+        camera : (1000, 1000, 3) uint8 ndarray
         brightmudflocs image.
     """
     return _load("brightmudflocs.png")
 
 
 def clearfloc():
-    """Gray-level "clearfloc" image.
-    Example image of a single mud floc with a clear background.
+    """fetches clearfloc image
 
-    Returns
-    -------
-    camera : (512, 512, 3) uint8 ndarray
+    Returns:
+        Gray-level "clearfloc" image. Example image of a single mud floc with a clear background.
+        camera : (512, 512, 3) uint8 ndarray
         clearfloc image.
     """
     return _load("clearfloc.png")
@@ -104,11 +100,9 @@ def noisyfloc():
 
 
 def por_flocs():
-    """ results from video measurement of the POR sample
+    """fetches por_flocs Excel file to Dataframe.
 
-
-    Returns
-    -------
-    pandas data frame
+    Returns:
+        (pandas data frame): results from video measurement of the POR sample
     """
     return pd.read_excel('por_flocs.xlsx')
