@@ -3,24 +3,24 @@
 
 viewer.py
 
-opencv window with scollbar to view images
+opencv window with scrollbar to view images
 
 """
 import numpy as np
 import cv2
 
-from PyQt5.QtGui import *
+# from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-class TrackbarViewer(QObject):
 
+class TrackbarViewer(QObject):
     frame_index_signal = pyqtSignal(int, name="frame_index_signal")
 
     def __init__(self,
                  parent=None,
                  size=None,
-                 pos=(750,50),
+                 pos=(750, 50),
                  scale=0.5,
                  params=None,
                  index=None,
@@ -40,15 +40,15 @@ class TrackbarViewer(QObject):
         self.setup_window()
 
     def setup_window(self):
-        """ set postion and scaling of trackbar window"""
+        """ set position and scaling of trackbar window"""
         cv2.namedWindow(self.name, cv2.WINDOW_NORMAL)
         cv2.startWindowThread()
-        x = int(self.parent.dt_width*0.27)
-        y = int(self.parent.dt_height*0.0175)
+        x = int(self.parent.dt_width * 0.27)
+        y = int(self.parent.dt_height * 0.0175)
         cv2.moveWindow(self.name, x, y)
 
-        w = int(self.parent.dt_width*0.65)
-        h = int(self.parent.dt_height*0.75)
+        w = int(self.parent.dt_width * 0.65)
+        h = int(self.parent.dt_height * 0.75)
 
         cv2.resizeWindow(self.name, w, h)
 
@@ -65,7 +65,7 @@ class TrackbarViewer(QObject):
         self.on_change(1)
 
         self.start = cv2.getTrackbarPos('start', self.name)
-        self.end   = cv2.getTrackbarPos('end', self.name)
+        self.end = cv2.getTrackbarPos('end', self.name)
 
         if self.start >= self.end:
             raise Exception("start must be less than end")
@@ -74,7 +74,7 @@ class TrackbarViewer(QObject):
         cv2.setTrackbarPos('start', self.name, int(index))
         self.frame_index = index
 
-        frame = frame.astype(np.uint8) # force to uint8.
+        frame = frame.astype(np.uint8)  # force to uint8.
         cv2.imshow(self.name, frame)
 
     def next_frame(self, **kwargs):
@@ -91,7 +91,7 @@ class TrackbarViewer(QObject):
     def update(self, frame, index, **kwargs):
         """ update the current image, external source connects here """
         if frame is not None:
-            frame = frame.astype(np.uint8) # force to uint8.
+            frame = frame.astype(np.uint8)  # force to uint8.
             cv2.imshow(self.name, frame)
             self.frame_index = index
 
@@ -100,11 +100,13 @@ class TrackbarViewer(QObject):
         cv2.destroyAllWindows()
         cv2.waitKey(1)
 
+
 def main(params=None, params_file=None):
     global app
     app = QApplication([])
     window = TrackbarViewer()
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
