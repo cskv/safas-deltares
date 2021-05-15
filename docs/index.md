@@ -4,7 +4,7 @@ Safas-deltares is **s**edimentation **a**nd **f**loc **a**nalysis **s**oftware, 
 
 This package permits the direct analysis of images and videos of flocs. Size, morphology and sedimentation rate information may be measured from videos and saved in an easily accessible format.
 
-**Safas** has several features that make if useful for the analysis of floc images and video:
+**Safas-deltares** has several features that make if useful for the analysis of floc images and video:
 
 * **"One-step" analysis.** The user can open a video file and directly process the frames. The results may exported to an .xlsx file in tabular format for analysis or reporting.
 
