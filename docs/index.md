@@ -1,8 +1,8 @@
 # Safas
 
-Safas is **s**edimentation **a**nd **f**loc **a**nalysis **s**oftware, a Python module for processing and interpretation of images and videos of flocs, a.k.a. aggregates, a.k.a. cohesive sediments.
+Safas is **s**edimentation **a**nd **f**loc **a**nalysis **s**oftware, a Python package for processing and interpretation of images and videos of floc sedimentation.
 
-This package permits the direct analysis of images and videos of flocs. Size, morphology and settling rate information may be measured from videos and saved in an easily accessible format.
+This package permits the direct analysis of images and videos of flocs. Size, morphology and sedimentation rate information may be measured from videos and saved in an easily accessible format.
 
 **Safas** has several features that make if useful for the analysis of floc images and video:
 

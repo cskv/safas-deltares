@@ -8,7 +8,7 @@ The object properties are calculated with the Scikit-Image function [regionprops
 
 | Property | Unit |
 | ----------------- | ------------------ |
-| area       |           [microns^2] |
+| area       |           [microns<sup>2</sup>] |
 |		equivalent_diameter |  [microns]  |
 |		perimeter            | [microns]  |
 |		euler_number        | [--]       |
