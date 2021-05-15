@@ -11,46 +11,48 @@ Make a ThreadQueue object, then add functions to be executed
 import traceback
 import sys
 
-import random
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+# import random
+# from PyQt5.QtGui import *
+# from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-class QueueThreads(QThreadPool): 
+
+class QueueThreads(QThreadPool):
     """
     general threadpool for the main GUI and other components
     """
     def __init__(self):
-        super(QueueThreads, self).__init__()   
-        
-    def add_to_queue(self, 
+        super(QueueThreads, self).__init__()
+
+    def add_to_queue(self,
                      function=None,
                      signal=None,
-                     slot=None, 
+                     slot=None,
                      **kwargs):
-        
+
         # signal passed as a string
         worker = Worker(function=function, signal=signal, slot=slot, **kwargs)
-     
+
         worker.signals.result.connect(self.print_output)
-        #worker.signals.finished.connect(self.thread_complete)
-        worker.signals.progress.connect(self.progress_fn)   
-        
+        # worker.signals.finished.connect(self.thread_complete)
+        worker.signals.progress.connect(self.progress_fn)
+
         # not every function added to queue requires signal/slot
-        if slot != None: 
+        if slot is not None:
             sig = getattr(worker.signals, signal)
             sig.connect(slot)
-        
+
         self.start(worker)
 
     def print_output(self, s):
-        """ """ 
-    
+        """ """
+
     def thread_complete(self):
-        """  """ 
-        
+        """  """
+
     def progress_fn(self, n):
         """ """
+
 
 class Worker(QRunnable):
     """
@@ -65,25 +67,25 @@ class Worker(QRunnable):
     :param kwargs: Keywords to pass to the callback function
 
     """
-    def __init__(self, 
-                 function=None, 
+    def __init__(self,
+                 function=None,
                  signal=None,
                  slot=None,
                  **kwargs):
-        
+
         super(Worker, self).__init__()
 
         self.function = function
         self.kwargs = kwargs
-        
-        self.signals = WorkerSignals()        
+
+        self.signals = WorkerSignals()
         self.kwargs['progress_callback'] = self.signals.progress
         self.kwargs['imgtime_callback'] = self.signals.imgtime
         self.kwargs['result_callback'] = self.signals.result
         self.kwargs['obj_callback'] = self.signals.obj
         self.kwargs['imgtimen_callback'] = self.signals.imgtimen
         self.kwargs['val_callback'] = self.signals.val
-        
+
     @pyqtSlot()
     def run(self):
         """ Initialise runner function with passed args, kwargs.
@@ -92,7 +94,7 @@ class Worker(QRunnable):
         """
         try:
             result = self.function(**self.kwargs)
-            
+
         except:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
@@ -101,7 +103,8 @@ class Worker(QRunnable):
             self.signals.result.emit(result)  # Return the result of the processing
         finally:
             self.signals.finished.emit()  # Done
-            
+
+
 class WorkerSignals(QObject):
     """
     Defines the signals available from a running worker thread.
@@ -110,12 +113,9 @@ class WorkerSignals(QObject):
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
-    progress = pyqtSignal(int)    
+    progress = pyqtSignal(int)
     imgtime = pyqtSignal((object, str))
     imgtimen = pyqtSignal((object, float, int))
     imgtimed = pyqtSignal((object, str, int))
     obj = pyqtSignal(object)
     val = pyqtSignal(int)
-
-
-

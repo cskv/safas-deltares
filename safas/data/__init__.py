@@ -6,15 +6,16 @@ Note: this is the same loader mechanism used by scikit-image
 """
 
 import os as _os
-import skimage
-import numpy as _np
-from warnings import warn
+# import skimage
+# import numpy as np
+# from warnings import warn
 import pandas as pd
 
 import os.path as osp
 data_dir = osp.abspath(osp.dirname(__file__))
 
 __all__ = ['mudflocs']
+
 
 def _load(f, as_gray=False):
     """Load an image file located in the data directory.
@@ -34,10 +35,12 @@ def _load(f, as_gray=False):
     from skimage.io import imread
     return imread(_os.path.join(data_dir, f), plugin='pil', as_gray=as_gray)
 
+
 def noisy():
     """Noisy gray level floc image
     """
     return _load("noisy.png")
+
 
 def mudflocs():
     """Gray-level "mudflocs" image.
@@ -50,6 +53,7 @@ def mudflocs():
     """
     return _load("mudflocs.png")
 
+
 def clayflocs():
     """Gray-level "clayflocs" image.
     Example image of clay flocs in settling colum.
@@ -60,6 +64,7 @@ def clayflocs():
         clayflocs image.
     """
     return _load("clayflocs.png")
+
 
 def brightmudflocs():
     """Gray-level "clayflocs" image.
@@ -73,6 +78,7 @@ def brightmudflocs():
     """
     return _load("brightmudflocs.png")
 
+
 def clearfloc():
     """Gray-level "clearfloc" image.
     Example image of a single mud floc with a clear background.
@@ -83,6 +89,7 @@ def clearfloc():
         clearfloc image.
     """
     return _load("clearfloc.png")
+
 
 def noisyfloc():
     """Gray-level "noisyfloc" image.
@@ -95,6 +102,7 @@ def noisyfloc():
     """
     return _load("noisyfloc.png")
 
+
 def por_flocs():
     """ results from video measurement of the POR sample
 
@@ -103,4 +111,4 @@ def por_flocs():
     -------
     pandas data frame
     """
-    return pd.excel_read('por_flocs.xlsx')
+    return pd.read_excel('por_flocs.xlsx')

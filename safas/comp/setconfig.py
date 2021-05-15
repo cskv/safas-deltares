@@ -16,6 +16,7 @@ import datetime
 import shutil
 import yaml
 
+
 def config_params(params=None, params_file=None, **kwargs):
     """
     take parameters from YAML configuration file or from dictionary passed
@@ -30,6 +31,7 @@ def config_params(params=None, params_file=None, **kwargs):
         print('params file or dictionary not passed')
 
     return params
+
 
 def set_dirout(params=None, dir_name=None, folders=None, **kwargs):
     # check the inputs: min headings need to be included
@@ -51,7 +53,7 @@ def set_dirout(params=None, dir_name=None, folders=None, **kwargs):
     if folders is None:
         folders = ['params', 'imgs', 'data']
 
-    [os.makedirs(os.path.join(dir_out,pth)) for pth in folders]
+    [os.makedirs(os.path.join(dir_out, pth)) for pth in folders]
 
     params['output'] = dir_out
 
@@ -59,10 +61,11 @@ def set_dirout(params=None, dir_name=None, folders=None, **kwargs):
         copy_params(params['params_file'], params['output'])
 
     params['readme'] = readme(params['output'])
-    values = [('Image trial info'),('File timestamp: ' + time_stamp)]
+    values = ['Image trial info', ('File timestamp: ' + time_stamp)]
     updatereadme(params['readme'].name, values)
 
     return params
+
 
 def read_params(file):
     """ get parameters from config file """
@@ -70,14 +73,16 @@ def read_params(file):
         params = yaml.safe_load(f)
     return params
 
+
 def write_params(file, params):
     """ write params to yaml file"""
-     # cannot serialize '_io.TextIOWrapper' object
+    # cannot serialize '_io.TextIOWrapper' object
     if 'readme' in params:
         params.pop('readme')
 
     with open(file, 'w') as file:
         docs = yaml.dump(params, file)
+
 
 def updatereadme(readme, lines):
     """
@@ -91,15 +96,17 @@ def updatereadme(readme, lines):
         myfile.write('\n')
         myfile.writelines(lines2)
 
+
 def readme(new_dir):
     """
     make a readme in the output folder
     """
-    nm = os.path.join(new_dir, 'params','readme.txt')
-    f = open(nm,'w')
+    nm = os.path.join(new_dir, 'params', 'readme.txt')
+    f = open(nm, 'w')
     f.close()
 
     return f
+
 
 def copy_params(config_file, new_dir):
     """

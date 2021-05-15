@@ -6,8 +6,13 @@ Matcher compares position and aera of tracked object to all other objects
 
 """
 import numpy as np
-from skimage.measure import regionprops
+# from skimage.measure import regionprops
 from scipy.spatial.distance import cdist
+
+import logging
+LOG = logging.getLogger('Matcher')  # fixed name to enable descendant logging objects...
+LOG.setLevel(logging.INFO)
+
 
 def matcher(A_props, A_ids, B_props, B_ids, criteria):
     """ find best match of tracked object in the new frame
@@ -50,6 +55,7 @@ def matcher(A_props, A_ids, B_props, B_ids, criteria):
     B_matches = match(err, criteria['error_threshold'], A_ids, B_ids)
     return B_matches
 
+
 def rank(A_props, B_props, criteria):
     """ calculate the error of each new object compared to most
             recent object added to the track
@@ -69,29 +75,33 @@ def rank(A_props, B_props, criteria):
             err = err**2
     return err
 
+
 def match(err, error_threshold, A_ids, B_ids):
     """ find the value and index of the objects with lowest error """
     # index of min value
     erridx = np.argmin(err, axis=1)
     errmin = np.min(err, axis=1)
-    #print(erridx, errmin, B_ids)
+    # print(erridx, errmin, B_ids)
     B_matches = B_ids[erridx]
     mask = errmin < error_threshold
-    B_matches[np.where(~mask)] = -99999 # easier to deal with than nan or None
+    B_matches[np.where(~mask)] = -99999  # easier to deal with than nan or None
 
-    return (B_matches, errmin)
+    return B_matches, errmin
+
 
 def cal_cdist(A_props, B_props):
 
-    A_cent =  np.array([prop.centroid for prop in A_props])
-    B_cent =  np.array([prop.centroid for prop in B_props])
+    A_cent = np.array([prop.centroid for prop in A_props])
+    B_cent = np.array([prop.centroid for prop in B_props])
     return cdist(A_cent, B_cent)
+
 
 def cal_carea(A_props, B_props):
     A_area = np.array([prop.area for prop in A_props])
-    B_area =  np.array([prop.area for prop in B_props])
+    B_area = np.array([prop.area for prop in B_props])
     return np.abs(B_area - A_area.reshape((A_area.shape[0], 1)))
 
 
-if __name__=='__main__':
-    P = FakeProp()
+if __name__ == '__main__':
+    pass
+    # P = FakeProp()
