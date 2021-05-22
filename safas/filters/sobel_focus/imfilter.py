@@ -28,7 +28,7 @@ from safas.filters.imfilters_module import (focus_filter,
 #   values are: [type, [MIN, MAX, DEFAULT]]
 define_args = {'img_thresh': [np.int, [0, 255, 120]],
                'edge_thresh': [np.int, [0, 255, 120]],
-               'edge_distance': [np.int, [0,9, 1]],
+               'edge_distance': [np.int, [0, 9, 1]],
                'apply_focus_filter': [np.bool, [True, False, True]],
                'apply_clearedge_filter': [np.bool, [True, False, True]],
                'contour_thickness': [np.int, [1, 4, 1]]}
@@ -46,9 +46,8 @@ def imfilter(src,
              apply_focus_filter=True,
              apply_clearedge_filter=True,
              contour_thickness=1,
-             contour_color=(0,255,0),
+             contour_color=(0, 255, 0),
              **kwargs):
-
     thresh, gray = prethresh_filter(src.copy(), img_thresh)
     ret, labels = cv2.connectedComponents(thresh)
 
@@ -74,9 +73,7 @@ if __name__ == '__main__':
 
     img = data.brightmudflocs()
     labels, contour_img = imfilter(img, **params)
-    f, ax = plt.subplots(1,2, dpi=250)
+    f, ax = plt.subplots(1, 2, dpi=250)
     ax[0].imshow(labels)
     ax[1].imshow(contour_img)
     plt.show()
-
-
