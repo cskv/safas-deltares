@@ -7,12 +7,12 @@ filter components that can be used in signal chain
 
 import cv2
 from skimage.measure import regionprops
-
 import numpy as np
+
 from safas import data
+
 import matplotlib.pyplot as plt
 import matplotlib
-
 matplotlib.use("Qt5Agg")
 
 
@@ -154,10 +154,11 @@ def add_contours(img, labels, contour_color, contour_thickness=1, **kwargs):
 
 if __name__ == '__main__':
     print('test the focus_filter')
-
     # img = data.mudflocs()
-    img = data.brightmudflocs()
+    img = data.brightmudflocs()  # img is color image
     thresh, img = prethresh_filter(img, img_thresh=80)
+
+    # img is converted to grayscale
     labels = marker_based_watershed(img, thresh)
     grad = cal_grad_img(img, edge_thresh=100)
     out = perim_filter(labels, grad, edge_dist=2)

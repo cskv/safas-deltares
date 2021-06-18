@@ -42,7 +42,7 @@ class TrackbarViewer(QObject):
     def setup_window(self):
         """ set position and scaling of trackbar window"""
         cv2.namedWindow(self.name, cv2.WINDOW_NORMAL)
-        cv2.startWindowThread()
+        # cv2.startWindowThread() # empty and undocumented function
         x = int(self.parent.dt_width * 0.27)
         y = int(self.parent.dt_height * 0.0175)
         cv2.moveWindow(self.name, x, y)
