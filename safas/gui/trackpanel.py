@@ -479,7 +479,7 @@ class TrackLists(QMainWindow):
         self.setWindowTitle('tracklists')
 
         self.layout = QGridLayout()
-        self.setup_lists()
+        self.setup_lists()    # setup QListWidget objects
         w = QWidget()
         w.setLayout(self.layout)
         self.setCentralWidget(w) # necessary with QMainWindow
@@ -491,7 +491,7 @@ class TrackLists(QMainWindow):
         self.setGeometry(x, y, w, h)
         self.show()
 
-        self.lists = ['new', 'tracks', 'open', ]
+        self.lists = ['new', 'tracks', 'open', ] # list of strings in the wrong order!
         self.set_shortcuts()
         self.current_track = None
         self.current_new = None
@@ -565,7 +565,7 @@ class TrackLists(QMainWindow):
         top_layout_2.addWidget(self.open_objs, 1, 1)
         top_layout_2.addWidget(self.new_objs, 1, 2)
 
-        hide_open = True
+        hide_open = False
         if hide_open:
             self.open_objs.hide()
             LF.hide()
