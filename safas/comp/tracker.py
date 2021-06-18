@@ -27,6 +27,7 @@ import os
 # from glob import glob
 # from itertools import cycle
 import collections
+# See: https://www.geeksforgeeks.org/ordereddict-in-python/
 # import importlib
 # import yaml
 
@@ -114,7 +115,7 @@ class Tracker(QObject):
             **kwargs:
 
         Returns:
-
+            (ordered dict): element of frames
         """
         # simple check in case viewer was scrolled back
         if frame_index not in self.frames:
@@ -144,10 +145,10 @@ class Tracker(QObject):
                 self.frame_count += 1
 
     def list_new(self):
-        """for external connections.
+        """getter function for numer of labeled regions (for external connections).
 
         Returns:
-
+            (int): number of labelled regions found by regionprops
         """
         if self.frame_index is not None:
             return self.frames[self.frame_index]['total']
@@ -653,9 +654,10 @@ def pad_images(prop, raw_frame, pad_val=10):
     """pad the binary image and extract the intensity image.
 
     Args:
-        prop:
-        raw_frame:
-        pad_val:
+        prop: single element of "props" list as returned from regionprops
+              must contain "bbox" key
+        raw_frame: single frame from original movie
+        pad_val: padding value in pixels
 
     Returns:
 
