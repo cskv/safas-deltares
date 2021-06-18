@@ -121,7 +121,7 @@ class Handler(QObject):
                 self.tracker.add_frame(label_frame, contour_frame, frame, index)
                 self.process_finished_signal.emit(1)
                 frame = contour_frame
-        # emit either the raw or overlay image
+        # emit the original image with overlayed contours image
         self.frame_signal.emit(frame, index)
 
     def get_n_frames(self, indexi, indexf, **kwargs):
