@@ -467,19 +467,13 @@ class TrackPanel(QMainWindow):
 
 
 class TrackLists(QMainWindow):
+    """this class is based on QMainWindow (sic!)
+
+    """
     status_update_signal = pyqtSignal(str, name="status_update_signal")
     newopen_outline_signal = pyqtSignal(object, int, name="sinle_outline_signal")
 
     def __init__(self, parent=None, params=None, params_file=None, *args, **kwargs):
-        """
-
-        Args:
-            parent:
-            params:
-            params_file:
-            *args:
-            **kwargs:
-        """
         super(TrackLists, self).__init__(*args, **kwargs)
         self.parent = parent
         self.setWindowTitle('tracklists')
@@ -488,7 +482,7 @@ class TrackLists(QMainWindow):
         self.setup_lists()
         w = QWidget()
         w.setLayout(self.layout)
-        self.setCentralWidget(w)
+        self.setCentralWidget(w) # necessary with QMainWindow
 
         x = int(self.parent.dt_width * Xp)
         y = int(self.parent.dt_height * 0.05)
@@ -529,13 +523,28 @@ class TrackLists(QMainWindow):
                           'predictone': predictone}
 
     def setup_lists(self):
-        """
+        """sets up QListWidget objects.
 
+            top_layout_2 contains 3 columns:
+            column 1 contains "Track List", QListWidget "tracks"
+            column 2 contains "Last Frame", QListWidget "open_objs"
+            column 3 contains "New objects", QListWidget "new_objs"
+            column 2 is hidden (!)
+            this is encapsulated by "ctrl_groupbox"
+            and added to self.layout
+
+            new_objs:
+                double-click connected to self.transfer_new
+                item_changed connected to self.outline_pair
+            open_objs:
+                item_changed connected to self. outline_pair
+                not accessible !
+            tracks:
+                item_changed connected to self.outline_track
         Returns:
 
         """
         top_layout_2 = QGridLayout()
-
         ctrl_groupbox = QGroupBox()
 
         self.tracks = QListWidget()
@@ -667,7 +676,9 @@ class TrackLists(QMainWindow):
             self.open_objs.addItems([str(v) for v in vals])
 
     def transfer_new(self, val=None, action='add', **kwargs):
-        """on double-click, or 'a' key, transfer object to track list.
+        """on double-click, or 'a' key, transfer object
+
+            from new_objs to tracks
 
         Args:
             val:
