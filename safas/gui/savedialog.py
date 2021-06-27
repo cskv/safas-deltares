@@ -45,7 +45,7 @@ class SaveDialog(QMainWindow):
         w.setLayout(self.layout)
         self.setCentralWidget(w)
         self.height = 200
-        self.width = 1000
+        self.width = 500
         self.setGeometry(450, 100, self.width, self.height)
 
     def control_buttons(self):
